@@ -11,6 +11,7 @@ This is very simple template engine to parse templates.
 php 7.2
 
 ## Installation
+
 via composer
 
     composer require laemmi/simple-template-engine
