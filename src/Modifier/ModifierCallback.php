@@ -1,5 +1,8 @@
 <?php
 /**
+ * Copyright 2007-2019 wdv Gesellschaft für Medien & Kommunikation mbH & Co. OHG
+ *
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation
@@ -18,34 +21,39 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  *
- * @category   simple-template-engine
- * @author     Michael Lämmlein <laemmi@spacerabbit.de>
- * @copyright  ©2019 laemmi
- * @license    http://www.opensource.org/licenses/mit-license.php MIT-License
- * @version    1.0.0
- * @since      2019-07-09
+ * @category    simple-template-engine
+ * @author      Michael Lämmlein <m.laemmlein@wdv.de>
+ * @copyright   ©2007-2019 wdv Gesellschaft für Medien & Kommunikation mbH & Co. OHG
+ * @license     http://www.opensource.org/licenses/mit-license.php MIT-License
+ * @version
+ * @since       2019-07-10
  */
 
-declare(strict_types=1);
+namespace Laemmi\SimpleTemplateEngine\Modifier;
 
-namespace Laemmi\SimpleTemplateEngine;
+use Laemmi\SimpleTemplateEngine\ModifierInterface;
 
-use Laemmi\SimpleTemplateEngine\Modifier\ModifierDefault;
-use Laemmi\SimpleTemplateEngine\Plugins\CompileIf;
-use Laemmi\SimpleTemplateEngine\Plugins\CompileVariable;
-
-class TemplateFactory
+class ModifierCallback implements ModifierInterface
 {
-    public static function factory($value) : Template
+    private $name;
+
+    private $function;
+
+    public function __construct(string $name, callable $function)
     {
-        $template = new Template($value);
+        $this->name     = $name;
+        $this->function = $function;
+    }
 
-        $CompileVariable = new CompileVariable();
-        $CompileVariable->addModifier(new ModifierDefault());
+    public function getName(): string
+    {
+        return $this->name;
+    }
 
-        $template->addPlugin($CompileVariable);
-        $template->addPlugin(new CompileIf());
+    public function __invoke($value)
+    {
+        $function = $this->function;
 
-        return $template;
+        return $function($value);
     }
 }

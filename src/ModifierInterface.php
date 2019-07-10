@@ -30,22 +30,9 @@ declare(strict_types=1);
 
 namespace Laemmi\SimpleTemplateEngine;
 
-use Laemmi\SimpleTemplateEngine\Modifier\ModifierDefault;
-use Laemmi\SimpleTemplateEngine\Plugins\CompileIf;
-use Laemmi\SimpleTemplateEngine\Plugins\CompileVariable;
-
-class TemplateFactory
+interface ModifierInterface
 {
-    public static function factory($value) : Template
-    {
-        $template = new Template($value);
+    public function getName() : string;
 
-        $CompileVariable = new CompileVariable();
-        $CompileVariable->addModifier(new ModifierDefault());
-
-        $template->addPlugin($CompileVariable);
-        $template->addPlugin(new CompileIf());
-
-        return $template;
-    }
+    public function __invoke($value);
 }

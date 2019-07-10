@@ -30,6 +30,8 @@ declare(strict_types=1);
 
 namespace Laemmi\SimpleTemplateEngine;
 
+use Laemmi\SimpleTemplateEngine\Modifier\ModifierCallback;
+use Laemmi\SimpleTemplateEngine\Plugins\CompileVariable;
 use PHPUnit\Framework\TestCase;
 
 class TemplateTest extends TestCase
@@ -47,10 +49,28 @@ class TemplateTest extends TestCase
         $template->assign('age', 99);
         $template->assign('x', 'x');
         $template->assign('foo', '');
-        $template->render();
 
         $this->assertEquals(
             $expected,
+            $template->render()
+        );
+    }
+
+    public function testModifierCallback()
+    {
+        $callback = new ModifierCallback('custom', function($value) {
+            return sprintf('Sir %s', $value);
+        });
+
+        $compiler = new CompileVariable();
+        $compiler->addModifier($callback);
+
+        $template = new Template('My name is {#name|custom#}');
+        $template->addPlugin($compiler);
+        $template->assign('name', 'Michael');
+
+        $this->assertEquals(
+            'My name is Sir Michael',
             $template->render()
         );
     }
@@ -77,6 +97,10 @@ class TemplateTest extends TestCase
             [
                 'a{if $name===\'Michael\'}b{#name#}{/if}c',
                 "abMichaelc"
+            ],
+            [
+                '{#name|strtolower#} {#name|strtoupper#}',
+                "michael MICHAEL"
             ],
         ];
     }

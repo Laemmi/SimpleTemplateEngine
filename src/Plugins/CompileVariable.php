@@ -30,18 +30,51 @@ declare(strict_types=1);
 
 namespace Laemmi\SimpleTemplateEngine\Plugins;
 
+use Laemmi\SimpleTemplateEngine\Modifier\ModifierDefault;
+use Laemmi\SimpleTemplateEngine\ModifierInterface;
 use Laemmi\SimpleTemplateEngine\PluginsInterface;
 
 class CompileVariable implements PluginsInterface
 {
-    private $format = '{#%s#}';
+    private $format = '#\{\#(.+?)\#\}#s';
+
+    private $modifier = [];
 
     public function __invoke(string $content, array $data)
     {
         foreach ($data as $key => $value) {
-            $content = str_replace(sprintf($this->format, $key), $value, $content);
+            $content = preg_replace_callback($this->format, function ($match) use ($data) {
+                $arr = explode('|',  $match[1]);
+                $val = array_shift($arr);
+                $val = isset($data[$val]) ? $data[$val] : '';
+
+                foreach ($arr as $modifier) {
+                    $val = $this->modify($modifier, $val);
+                }
+
+                return $val;
+            }, $content);
         }
 
         return $content;
+    }
+
+    public function addModifier(ModifierInterface $modifier)
+    {
+        $this->modifier[$modifier->getName()] = $modifier;
+    }
+
+    private function modify(string $modifier, $value)
+    {
+        if (isset($this->modifier[$modifier])) {
+            return $this->modifier[$modifier]($value);
+        }
+
+        if (isset($this->modifier['default'])) {
+            $this->modifier['default']->modifier = $modifier;
+            return $this->modifier['default']($value);
+        }
+
+        return $value;
     }
 }
