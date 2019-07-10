@@ -36,7 +36,7 @@ class CompileIf implements PluginsInterface
 {
     public function __invoke(string $content, array $data)
     {
-        $content = preg_replace_callback('#\{if\s(.+?)}(.+?)\{/if}#s', function ($match) use ($data) {
+        return preg_replace_callback('#\{if\s(.+?)}(.+?)\{/if}#s', function ($match) use ($data) {
 
             extract($data);
 
@@ -49,7 +49,5 @@ class CompileIf implements PluginsInterface
             }
             return '';
         }, $content);
-
-        return $content;
     }
 }
