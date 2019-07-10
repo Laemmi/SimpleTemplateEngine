@@ -1,6 +1,9 @@
 {
     "name": "laemmi/simple-template-engine",
-    "type": "project",
+    "type": "library",
+    "description": "This is very simple template engine to parse templates",
+    "keywords": ["template", "template-engine"],
+    "homepage": "https://github.com/laemmi/simple-template-engine",
     "require": {
         "php": "^7.2"
     },
