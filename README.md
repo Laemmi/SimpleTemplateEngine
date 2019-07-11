@@ -21,7 +21,30 @@ or use repository
     git clone https://github.com/Laemmi/simple-template-engine.git
     
 ## Usage
-    $template = TemplateFactory::factory('My name is {if $name}{#name#}{/if} and i am {#age#} years old.');
-    $template->assign('name', 'Michael');
-    $template->assign('age', 99);
-    $template->render();
+In this package you have to compiler. Once for replacing variable and one for if statements.
+For the variable compiler you can use modifiers. In default you can use all php functions like strtoupper etc.
+
+### Use with factory
+
+    $template = TemplateFactory::factory('My name is {if $name}{#name|strtoupper#}{/if} and i am {#age#} years old.');
+    $template->name = 'Michael';
+    $template->age  = 99;
+    $template();
+    
+    // My name is MICHAEL and i am 99 years old.
+    
+### Use with callback modifier 
+
+    $callback = new ModifierCallback('custom', function($value) {
+        return sprintf('Sir %s', $value);
+    });
+
+    $compiler = new CompileVariable();
+    $compiler->addModifier($callback);
+
+    $template = new Template('My name is {#name|custom#}');
+    $template->addPlugin($compiler);
+    $template->name = 'Michael';
+    $template();
+    
+    // My name is Sir Michael

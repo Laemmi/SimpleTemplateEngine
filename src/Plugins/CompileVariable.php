@@ -33,20 +33,34 @@ namespace Laemmi\SimpleTemplateEngine\Plugins;
 use Laemmi\SimpleTemplateEngine\Modifier\ModifierDefault;
 use Laemmi\SimpleTemplateEngine\ModifierInterface;
 use Laemmi\SimpleTemplateEngine\PluginsInterface;
+use Laemmi\SimpleTemplateEngine\Template;
 
 class CompileVariable implements PluginsInterface
 {
+    /**
+     * @var string
+     */
     private $format = '#\{\#(.+?)\#\}#s';
 
+    /**
+     * @var array
+     */
     private $modifier = [];
 
-    public function __invoke(string $content, array $data)
+    /**
+     * @param Template $template
+     *
+     * @return string
+     */
+    public function __invoke(Template $template) : string
     {
-        foreach ($data as $key => $value) {
-            $content = preg_replace_callback($this->format, function ($match) use ($data) {
+        $content = $template;
+
+        foreach ($template as $key => $value) {
+            $content = preg_replace_callback($this->format, function ($match) use ($template) {
                 $arr = explode('|',  $match[1]);
-                $val = array_shift($arr);
-                $val = isset($data[$val]) ? $data[$val] : '';
+                $key = array_shift($arr);
+                $val = $template->offsetGet($key);
 
                 foreach ($arr as $modifier) {
                     $val = $this->modify($modifier, $val);
@@ -59,11 +73,20 @@ class CompileVariable implements PluginsInterface
         return $content;
     }
 
+    /**
+     * @param ModifierInterface $modifier
+     */
     public function addModifier(ModifierInterface $modifier)
     {
         $this->modifier[$modifier->getName()] = $modifier;
     }
 
+    /**
+     * @param string $modifier
+     * @param $value
+     *
+     * @return mixed
+     */
     private function modify(string $modifier, $value)
     {
         if (isset($this->modifier[$modifier])) {

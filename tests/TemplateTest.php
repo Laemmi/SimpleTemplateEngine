@@ -45,14 +45,14 @@ class TemplateTest extends TestCase
     public function testTemplateFull(string $content, string $expected)
     {
         $template = TemplateFactory::factory($content);
-        $template->assign('name', 'Michael');
-        $template->assign('age', 99);
-        $template->assign('x', 'x');
-        $template->assign('foo', '');
+        $template->name = 'Michael';
+        $template->age  = 99;
+        $template->x    = 'x';
+        $template->foo  = '';
 
         $this->assertEquals(
             $expected,
-            $template->render()
+            $template()
         );
     }
 
@@ -67,11 +67,11 @@ class TemplateTest extends TestCase
 
         $template = new Template('My name is {#name|custom#}');
         $template->addPlugin($compiler);
-        $template->assign('name', 'Michael');
+        $template->name = 'Michael';
 
         $this->assertEquals(
             'My name is Sir Michael',
-            $template->render()
+            $template()
         );
     }
 

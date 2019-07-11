@@ -36,6 +36,11 @@ use Laemmi\SimpleTemplateEngine\Plugins\CompileVariable;
 
 class TemplateFactory
 {
+    /**
+     * @param $value
+     *
+     * @return Template
+     */
     public static function factory($value) : Template
     {
         $template = new Template($value);

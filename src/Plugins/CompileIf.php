@@ -31,14 +31,20 @@ declare(strict_types=1);
 namespace Laemmi\SimpleTemplateEngine\Plugins;
 
 use Laemmi\SimpleTemplateEngine\PluginsInterface;
+use Laemmi\SimpleTemplateEngine\Template;
 
 class CompileIf implements PluginsInterface
 {
-    public function __invoke(string $content, array $data)
+    /**
+     * @param Template $template
+     *
+     * @return string
+     */
+    public function __invoke(Template $template) : string
     {
-        return preg_replace_callback('#\{if\s(.+?)}(.+?)\{/if}#s', function ($match) use ($data) {
+        return preg_replace_callback('#\{if\s(.+?)}(.+?)\{/if}#s', function ($match) use ($template) {
 
-            extract($data);
+            extract($template->getArrayCopy());
 
             list($all, $condition, $content) = $match;
 
@@ -48,6 +54,6 @@ class CompileIf implements PluginsInterface
                 return $content;
             }
             return '';
-        }, $content);
+        }, $template);
     }
 }

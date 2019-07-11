@@ -30,35 +30,64 @@ declare(strict_types=1);
 
 namespace Laemmi\SimpleTemplateEngine;
 
-class Template
+use ArrayIterator;
+
+class Template extends ArrayIterator
 {
+    /**
+     * @var string
+     */
     private $content;
 
-    private $data = [];
-
+    /**
+     * @var array
+     */
     private $plugins = [];
 
-    public function __construct($value)
+    /**
+     * Template constructor.
+     *
+     * @param string $value
+     */
+    public function __construct(string $value)
     {
         $this->content = $value;
     }
 
-    public function assign(string $key, $value)
+    /**
+     * @param string $index
+     * @param $value
+     */
+    public function __set(string $index, $value)
     {
-       $this->data[$key] = $value;
+       $this->offsetSet($index, $value);
     }
 
-    public function addPlugin(PluginsInterface $plugin)
+    /**
+     * @return string
+     */
+    public function __toString()
     {
-        $this->plugins[get_class($plugin)] = $plugin;
+        return $this->content;
     }
 
-    public function render() : string
+    /**
+     * @return string
+     */
+    public function __invoke() : string
     {
         foreach ($this->plugins as $plugin) {
-            $this->content = $plugin($this->content, $this->data);
+            $this->content = $plugin($this);
         }
 
         return $this->content;
+    }
+
+    /**
+     * @param PluginsInterface $plugin
+     */
+    public function addPlugin(PluginsInterface $plugin)
+    {
+        $this->plugins[get_class($plugin)] = $plugin;
     }
 }

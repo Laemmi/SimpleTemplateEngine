@@ -32,5 +32,10 @@ namespace Laemmi\SimpleTemplateEngine;
 
 interface PluginsInterface
 {
-    public function __invoke(string $content, array $data);
+    /**
+     * @param Template $template
+     *
+     * @return mixed
+     */
+    public function __invoke(Template $template) : string;
 }
