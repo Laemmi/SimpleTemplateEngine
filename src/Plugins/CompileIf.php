@@ -54,6 +54,6 @@ class CompileIf implements PluginsInterface
                 return $content;
             }
             return '';
-        }, $template);
+        }, (string) $template);
     }
 }
