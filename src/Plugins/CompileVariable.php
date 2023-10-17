@@ -54,7 +54,7 @@ class CompileVariable implements PluginsInterface
      */
     public function __invoke(Template $template) : string
     {
-        $content = $template;
+        $content = (string) $template;
 
         foreach ($template as $key => $value) {
             $content = preg_replace_callback($this->format, function ($match) use ($template) {
